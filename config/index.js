@@ -7,11 +7,13 @@
 
 const path = require('path');
 const utils = require('./../build/utils');
+const dev = require('./dev');
+const prod = require('./prod');
 
 let config = {
     dev: {
         assetsPublic: '/',
-        assetsSubDirectory: 'static',
+        assetsSubDirectory: dev.assetsSubDirectory,
         devtool: 'source-map',
         filename: 'js/[name].bundle.js',
         chunkFilename: 'js/[name].[chunkhash].bundle.js',
@@ -49,7 +51,7 @@ let config = {
         template: path.resolve(__dirname, '../public/index.html'),
         assetsRoot: path.resolve(__dirname, '../dist'),
         assetsPublic: '/',        // 'https://cdn.example.com/assets/[fullhash]/' CDN托管
-        assetsSubDirectory: 'static',
+        assetsSubDirectory: prod.assetsSubDirectory,
         productionSourceMap: true,
         devtool: 'source-map',
         filename: utils.assetsPath('js/[name].[contenthash].bundle.js'),

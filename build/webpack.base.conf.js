@@ -176,13 +176,17 @@ module.exports = {
             BASE_URI: process.env.NODE_ENV === 'production' ? config.build.baseURI : config.dev.baseURI
         }),
 
-        new CopyWebpackPlugin([
-            {
-                from: path.resolve(__dirname, '../public'),
-                to: config.dev.assetsSubDirectory,
-                ignore: ['.*']
-            }
-        ]),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, '../public'),
+                    to: config.dev.assetsSubDirectory,
+                    globOptions: {
+                        ignore: ['.*']
+                    }
+                }
+            ]
+        }),
 
         new friendlyErrorsWebpackPlugin(),
 

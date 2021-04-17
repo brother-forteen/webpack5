@@ -3,3 +3,4 @@
  * @author: wen_dell
  * @email: wendell.chen@chinaentropy.com
  * **/
+module.exports.assetsSubDirectory = 'static';

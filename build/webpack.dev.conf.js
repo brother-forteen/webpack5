@@ -5,13 +5,14 @@
  * **/
 'use strict';
 
+const path = require('path');
 const config = require('./../config/index.js');
 const base = require('./webpack.base.conf');
 
-const merge = require('webpack-merge');
+const webpackMerge = require('webpack-merge');
 const webpack = require('webpack');
 
-module.exports = merge(base, {
+module.exports = webpackMerge.merge(base, {
     mode: 'development',
     devtool: config.dev.devtool,
     devServer: {

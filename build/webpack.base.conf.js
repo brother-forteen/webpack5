@@ -5,10 +5,10 @@
  * **/
 'use strict';
 
-const path = require('path');
 const config = require('../config/index.js');
 const utils = require('./utils');
 
+const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -18,6 +18,7 @@ const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPl
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
+    // context: __dirname,
     entry: {
         main: path.resolve(__dirname, '../src/main.js')
     },
@@ -33,15 +34,16 @@ module.exports = {
             '@': path.resolve('src')
         }
     },
-    cache: {
-        type: 'filesystem',
-        cacheDirectory: 'node_modules/.cache/webpack',     // 默认将缓存存储在 node_modules/.cache/webpack
-        // 缓存依赖，当缓存依赖修改时，缓存失效
-        buildDependencies: {
-            // 将配置添加依赖，更改配置时，使得缓存失效
-            config: [__filename]
-        }
-    },
+    // cache: {
+    //     type: 'filesystem',
+    //     cacheDirectory: 'node_modules/.cache/webpack',     // 默认将缓存存储在 node_modules/.cache/webpack
+    //     // 缓存依赖，当缓存依赖修改时，缓存失效
+    //     buildDependencies: {
+    //         // 将配置添加依赖，更改配置时，使得缓存失效 当构建依赖的config文件（通过 require 依赖）内容发生变化时，缓存失效
+    //         config: [__filename]
+    //     },
+    //     name: 'development-cache'
+    // },
     module: {
         rules: [
             {
@@ -51,15 +53,15 @@ module.exports = {
                     {
                         loader: 'babel-loader',
                     },
-                    {
-                        loader: 'eslint-loader',
-                        options: {
-                            enforce: 'pre',                                 // 在加载前执行
-                            fix: true,                                      // 自动修复
-                            include: [path.resolve(__dirname, '../src')],   // 指定检查的目录
-                            formatter: require('eslint-friendly-formatter') // 指定错误报告的格式规范
-                        }
-                    }
+                    // {
+                    //     loader: 'eslint-loader',
+                    //     options: {
+                    //         enforce: 'pre',                                 // 在加载前执行
+                    //         fix: true,                                      // 自动修复
+                    //         include: [path.resolve(__dirname, '../src')],   // 指定检查的目录
+                    //         formatter: require('eslint-friendly-formatter') // 指定错误报告的格式规范
+                    //     }
+                    // }
                 ]
             },
             {
@@ -102,22 +104,8 @@ module.exports = {
                 }]
             },
             {
-                test: /\.(png|jpg|jpeg|gif|svg|webp)$/,
-                use: [
-                    {
-                        loader: 'url-loader',
-                        options: {
-                            outputPath: 'imgs/', //输出路径
-                            name: utils.assetsPath('img/[name]-[hash:7].[ext]'), //文件名
-                            limit: 8192, //超过限制会使用file-loader
-
-                            // webpack5不会出现
-                            // 问题：因为url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs，解析市会出现问题：[object Module]
-                            // 解决：关闭url-loader的es6模块化，使用commonjs解析
-                            // esModule: false, //支持 require("imgUrl") 方式
-                        }
-                    }
-                ]
+                test: /\.(jpe?g|png|gif|svg|webp|woff|woff2|eot|ttf|otf)$/i,
+                type: "assets/resource"
             },
             {
                 test: /\.html$/,
@@ -159,7 +147,6 @@ module.exports = {
             title: 'Title',
             index: config.build.index,
             template: config.build.template,
-            inject: 'body',
             // minify: {
             //     minifyJS: true,  //压缩内联js
             //     minifyCSS: true, //压缩内联css
@@ -190,30 +177,28 @@ module.exports = {
 
         new friendlyErrorsWebpackPlugin(),
 
-        new ModuleFederationPlugin({
-            name: config.build.appName,                 // 当前应用名称，需要全局唯一
-            remotes: {                                  // 可以将其他项目的name映射到当前的项目中
-                app_two: 'app_tow_remote',
-                app_three: 'app_three_remote'
-            },
-            exposes: {                                  // 表示导出的模块，只有在此申明的模块才可以作为远程依赖被使用。
-                AppContainer: "./src/App"
-            },
-            shared: ['react', 'react-dom', 'react-router-dom'],    // 是非常重要的参数，制定了这个参数，可以让远程加载的模块对应依赖改为使用本地项目的 React 或 ReactDOM。
-        })
+        // new ModuleFederationPlugin({
+        //     name: config.build.appName,                 // 当前应用名称，需要全局唯一
+        //     remotes: {                                  // 可以将其他项目的name映射到当前的项目中
+        //         app_two: 'app_tow_remote',
+        //         app_three: 'app_three_remote'
+        //     },
+        //     exposes: {                                  // 表示导出的模块，只有在此申明的模块才可以作为远程依赖被使用。
+        //         AppContainer: "./src/App"
+        //     },
+        //     shared: ['react', 'react-dom', 'react-router-dom'],    // 是非常重要的参数，制定了这个参数，可以让远程加载的模块对应依赖改为使用本地项目的 React 或 ReactDOM。
+        // })
     ],
     node: {
-        // prevent webpack from injecting useless setImmediate polyfill because Vue
-        // source contains it (although only uses it if it's native).
-        setImmediate: false,
-
-        // prevent webpack from injecting mocks to Node native modules
-        // that does not make sense for the client
-
-        dgram: 'empty',
-        fs: 'empty',
-        net: 'empty',
-        tls: 'empty',
-        child_process: 'empty'
+        // Polyfills and mocks to run Node.js-
+        // environment code in non-Node environments.
+        global: true, // boolean
+        // replace "global" with the output.globalObject
+        __filename: "mock", // boolean | "mock" | "eval-only"
+        __dirname: "mock", // boolean | "mock" | "eval-only"
+        // true: includes the real path
+        // "mock": includes a fake path
+        // "eval-only": only defines it at compile-time
+        // false: disables all handling
     }
 };

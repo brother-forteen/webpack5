@@ -19,6 +19,7 @@ module.exports = merge(base, {
 
     optimization: {
         minimizer : [
+            new CssMinimizer(),
 
         ],
         splitChunks: {
@@ -28,7 +29,6 @@ module.exports = merge(base, {
             }
         },
         moduleIds: 'deterministic',    // 有益于长期缓存，但对比于 hashed 来说，它会导致更小的文件 bundles
-
     },
 
     plugins: [
